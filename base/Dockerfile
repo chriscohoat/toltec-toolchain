@@ -206,20 +206,18 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && find "$SYSROOT" -type l,f -name "*.la" | xargs --no-run-if-empty rm
 
 # Build breakpad 0.1 (db1cda2653) targeting armhf
+
 RUN export DEBIAN_FRONTEND=noninteractive \
-    # Install build dependencies
-    && apt-get update -y \
+    && apt-get update
+
+# Necessary for breakpad to build
+RUN apt-get install -y --no-install-recommends git zlib1g-dev libssl-dev libz-dev libssl-dev libxml2-dev libcurl4-openssl-dev
+
+RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y --no-install-recommends \
         git \
         zlib1g-dev \
         libssl-dev \
-    # breakpad's build tools require python2 to be available as python on the path
-    && git clone https://github.com/pyenv/pyenv.git .pyenv \
-    && export PYENV_ROOT="$(pwd)/.pyenv" \
-    && export PATH="$PYENV_ROOT/bin:$PATH" \
-    && eval "$(pyenv init --path)" \
-    && pyenv install 2.7 \
-    && pyenv global 2.7 \
     # Fetch and activate depot_tools
     && cd /root \
     && git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
@@ -230,7 +228,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && cd breakpad \
     && fetch breakpad \
     && cd src \
-    && git checkout db1cda26539c711c3da7ed4d410dfe8190e89b8f \
+    && git checkout v2023.06.01 \
     && ./configure --prefix=/usr --host="$CHOST" \
     && make \
     && DESTDIR="$SYSROOT" make install \
