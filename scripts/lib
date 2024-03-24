@@ -39,8 +39,11 @@ check-package-permissions() {
 
     echo "Final URL: $api_url"
 
+    # print the token:
+    echo "GITHUB_TOKEN: $GH_TOKEN"
+
     # Make the request and save the full response to a variable
-    local response=$(curl -sH "Authorization: token $GITHUB_TOKEN" "$api_url")
+    local response=$(curl -sH "Authorization: Bearer $GH_TOKEN" "$api_url")
 
     echo "Full API Response:"
     echo "$response"

@@ -9,8 +9,6 @@ jobs:
   build:
     name: Publish latest
     runs-on: ubuntu-latest
-    env: # Important to verify down-stream publishing permissions
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout the Git repository
         uses: actions/checkout@v3
@@ -23,3 +21,5 @@ jobs:
       - name: Build and publish images
         run: |
           ./scripts/build -p .
+        env:
+          GH_TOKEN: ${{ github.token }}
