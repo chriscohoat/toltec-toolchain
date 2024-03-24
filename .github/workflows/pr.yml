@@ -17,3 +17,5 @@ jobs:
       - name: Build images
         run: |
           ./scripts/build .
+        env:
+          GH_TOKEN: ${{ github.token }}
