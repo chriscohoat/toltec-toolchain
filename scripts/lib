@@ -30,12 +30,14 @@ image-name() {
     # by the GitHub action. But to enable local builds, we set a default.
     local default_registry="ghcr.io"
     local registry="${REGISTRY:-$default_registry}"
+    
+    # Use IMAGE_NAME if it exists and split it to get the repo name,
+    # otherwise, use the default repository name.
+    local default_repo="toltec-dev"
+    local repo="${default_repo}"
+    if [ -n "${IMAGE_NAME}" ]; then
+        repo=$(echo "${IMAGE_NAME}" | cut -d'/' -f2)
+    fi
 
-    # This also has a default value to make sure we can build locally without
-    # environment variables.
-    local default_image_name="toltec-dev/toolchain"
-    local image_name="${IMAGE_NAME:-$default_image_name}"
-    local tag="${2:-latest}"
-
-    echo "$registry/$image_name:$tag"
+    echo "$registry/$repo/$1:${2:-latest}"
 }
