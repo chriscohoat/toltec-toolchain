@@ -36,7 +36,7 @@ image-name() {
     local default_repo="toltec-dev"
     local repo="${default_repo}"
     if [ -n "${IMAGE_NAME}" ]; then
-        repo=$(echo "${IMAGE_NAME}" | cut -d'/' -f2)
+        repo=$(echo "${IMAGE_NAME}" | cut -d'/' -f1)
     fi
 
     echo "$registry/$repo/$1:${2:-latest}"
