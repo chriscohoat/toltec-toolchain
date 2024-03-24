@@ -26,5 +26,16 @@ status() {
 # $1 - Name of the image
 # $2 - Version of the image
 image-name() {
-    echo "$REGISTRY/$IMAGE_NAME:${2:-latest}"
+    # This will typically be set to 'ghcr.io' for GitHub Container Registry
+    # by the GitHub action. But to enable local builds, we set a default.
+    local default_registry="ghcr.io"
+    local registry="${REGISTRY:-$default_registry}"
+
+    # This also has a default value to make sure we can build locally without
+    # environment variables.
+    local default_image_name="toltec-dev/toolchain"
+    local image_name="${IMAGE_NAME:-$default_image_name}"
+    local tag="${2:-latest}"
+
+    echo "$registry/$image_name:$tag"
 }
