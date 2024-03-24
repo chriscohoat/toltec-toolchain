@@ -49,8 +49,6 @@ version="$2"
 # See <https://docs.docker.com/engine/reference/builder/#buildkit>
 export DOCKER_BUILDKIT=1
 
-check-package-permissions $1 ${2:-latest}
-
 docker-build() {
     from="$(image-name "$1" "$version")"
     target="$(image-name "$2" "$version")"
