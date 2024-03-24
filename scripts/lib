@@ -35,20 +35,24 @@ check-package-permissions() {
     local version=${2:-latest}
     local gh_api="https://api.github.com"
     local package_type="container" # For Docker images, the package type is container
+    local api_url="$gh_api/user/packages/$package_type/$image_name/versions"
 
-    # Fetch the package ID using the GitHub API and jq to parse the JSON response
-    local package_id=$(curl -sH "Authorization: token $GITHUB_TOKEN" \
-        "$gh_api/user/packages/$package_type/$image_name/versions" | jq -r ".[] | select(.name == \"$version\") | .id")
+    echo "Final URL: $api_url"
+
+    # Make the request and save the full response to a variable
+    local response=$(curl -sH "Authorization: token $GITHUB_TOKEN" "$api_url")
+
+    echo "Full API Response:"
+    echo "$response"
+
+    # Fetch the package ID using the response and jq to parse the JSON
+    local package_id=$(echo "$response" | jq -r ".[] | select(.name == \"$version\") | .id")
 
     # If no package_id is found, it might mean the package/version doesn't exist yet, which might be okay for a push operation
     if [[ -z $package_id ]]; then
         echo "Package/version does not exist, assuming write access is available for creation."
         exit
+    else
+        echo "Package with ID $package_id exists, proceeding with assumption of write access."
     fi
-
-    # Optionally, further check permissions on the package_id here if needed
-    # This step is more about ensuring the package exists and your token can see it,
-    # which indirectly implies write access, but specific permission checks would depend on GitHub's API capabilities
-
-    echo "Package with ID $package_id exists, proceeding with assumption of write access."
 }
