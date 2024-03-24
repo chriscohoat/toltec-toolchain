@@ -28,4 +28,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: Build and publish images
         run: |
+          echo "Registry: $REGISTRY"
+          echo "Image Name: $IMAGE_NAME"
           ./scripts/build -p .
