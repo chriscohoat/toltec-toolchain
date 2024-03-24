@@ -26,5 +26,29 @@ status() {
 # $1 - Name of the image
 # $2 - Version of the image
 image-name() {
-    echo "ghcr.io/toltec-dev/$1:${2:-latest}"
+    echo "ghcr.io/chriscohoat/$1:${2:-latest}"
+}
+
+# Requires jq for parsing JSON - ensure jq is installed or adjust parsing as needed
+check-package-permissions() {
+    local image_name=$1
+    local version=${2:-latest}
+    local gh_api="https://api.github.com"
+    local package_type="container" # For Docker images, the package type is container
+
+    # Fetch the package ID using the GitHub API and jq to parse the JSON response
+    local package_id=$(curl -sH "Authorization: token $GITHUB_TOKEN" \
+        "$gh_api/user/packages/$package_type/$image_name/versions" | jq -r ".[] | select(.name == \"$version\") | .id")
+
+    # If no package_id is found, it might mean the package/version doesn't exist yet, which might be okay for a push operation
+    if [[ -z $package_id ]]; then
+        echo "Package/version does not exist, assuming write access is available for creation."
+        exit
+    fi
+
+    # Optionally, further check permissions on the package_id here if needed
+    # This step is more about ensuring the package exists and your token can see it,
+    # which indirectly implies write access, but specific permission checks would depend on GitHub's API capabilities
+
+    echo "Package with ID $package_id exists, proceeding with assumption of write access."
 }
